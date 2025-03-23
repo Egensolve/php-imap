@@ -453,7 +453,12 @@ class Folder {
                 // This polymorphic call is fine - Protocol::idle() will throw an exception beforehand
                 $line = $idle_client->getConnection()->nextLine(Response::empty());
             } catch (Exceptions\RuntimeException $e) {
-                if(strpos($e->getMessage(), "empty response") >= 0 && $idle_client->getConnection()->connected()) {
+                if (strpos($e->getMessage(), "empty response") !== false && $idle_client->getConnection()->connected()) {
+                    if ($last_action->isBefore(Carbon::now())) {
+                        $this->client->reconnect();
+                        $this->client->openFolder($this->path, true);
+                        $last_action = Carbon::now()->addSeconds($timeout);
+                    }
                     continue;
                 }
                 if(!str_contains($e->getMessage(), "connection closed")) {
