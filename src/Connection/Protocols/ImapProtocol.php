@@ -103,7 +103,7 @@ class ImapProtocol extends Protocol {
     public function connected(): bool {
         if ((bool)$this->stream) {
             try {
-                $this->requestAndResponse('NOOP');
+                // $this->requestAndResponse('NOOP');
                 return true;
             } catch (ImapServerErrorException|RuntimeException) {
                 return false;
